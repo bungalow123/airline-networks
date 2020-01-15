@@ -1,0 +1,139 @@
+---
+title: "Flights"
+author: "Eddie Liu"
+date: "November 6, 2019"
+output: html_document
+---
+
+#Which Locations and Airlines experience more delays?
+
+##Delays by Airlines
+```{r}
+library(dplyr)
+library(ggplot2)
+mydata <- read.csv('flights.csv')
+dim(mydata)
+
+
+#Absolute value of Departure and Arrival delays
+mydata$DEPARTURE_DELAY <- abs(mydata$DEPARTURE_DELAY)
+mydata$ARRIVAL_DELAY <- abs(mydata$ARRIVAL_DELAY)
+
+
+#Summary table of amount of Airlines
+table(mydata$AIRLINE)
+
+
+
+#Average Departure Delay Times by Airline
+AIRLINE_dep_delay <- mydata %>% group_by(AIRLINE) %>%
+           summarise(
+             AverageDelay = mean(DEPARTURE_DELAY, na.rm = TRUE)) %>% arrange(desc(AverageDelay))
+
+AIRLINE_dep_delay 
+
+par(mfrow=c(1,2)) 
+ggplot(data = AIRLINE_dep_delay, aes(x=reorder(AIRLINE, AverageDelay), y = AverageDelay)) + geom_bar(stat = 'identity', fill='steelblue') + xlab('Airline') + ylab('Average Delay') + ggtitle('Average Departure Delay Times by Airline') + theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+```{r}
+#Average Arrival Delay Times by Airline
+AIRLINE_arr_delay <- mydata %>% group_by(AIRLINE) %>%
+            summarise(
+             AverageDelay = mean(ARRIVAL_DELAY, na.rm = TRUE))
+
+AIRLINE_arr_delay
+
+ggplot(data = AIRLINE_arr_delay, aes(x=reorder(AIRLINE, AverageDelay), y = AverageDelay)) + geom_bar(stat = 'identity', fill='orange') + xlab('Airline') + ylab('Average Delay') + ggtitle('Average Arrival Delay Times by Airline') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+##Delays by Location
+###Origin Airport
+```{r}
+#Average Departure Delay Times by Top 5 Origin Airport
+AIRLINE_dep_delay <- mydata %>% group_by(ORIGIN_AIRPORT) %>%
+           summarise(
+             n = n(),
+             AverageDelay = mean(DEPARTURE_DELAY, na.rm = TRUE)) %>% arrange(desc(n))
+
+top_5_airlines <- head(AIRLINE_dep_delay,5)
+top_5_airlines
+
+par(mfrow=c(1,2)) 
+ggplot(data = top_5_airlines, aes(x=reorder(ORIGIN_AIRPORT, AverageDelay), y = AverageDelay)) + geom_bar(stat = 'identity', fill='steelblue') + xlab('Airline') + ylab('Average Delay') + ggtitle('Top 5 Average Departure Delay Times by Origin Airport') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#Average Arrival Delay Times by Top 5 Origin Airport
+AIRLINE_arr_delay <- mydata %>% group_by(ORIGIN_AIRPORT) %>%
+           summarise(
+             n = n(),
+             AverageDelay = mean(ARRIVAL_DELAY, na.rm = TRUE)) %>% arrange(desc(n))
+
+top_5_airlines <- head(AIRLINE_arr_delay,5)
+top_5_airlines
+
+
+ggplot(data = top_5_airlines, aes(x= reorder(ORIGIN_AIRPORT, AverageDelay), y = AverageDelay)) + geom_bar(stat = 'identity', fill='steelblue') + xlab('Airline') + ylab('Average Delay') + ggtitle('Top 5 Average Arrival Delay Times by Origin Airport') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+###Destination Airport
+```{r}
+#Average Departure Delay Times by Top 5 Destination Airport
+AIRLINE_dep_delay <- mydata %>% group_by(DESTINATION_AIRPORT) %>%
+           summarise(
+             n = n(),
+             AverageDelay = mean(DEPARTURE_DELAY, na.rm = TRUE)) %>% arrange(desc(n))
+
+top_5_airlines <- head(AIRLINE_dep_delay,5)
+top_5_airlines
+
+par(mfrow=c(1,2)) 
+ggplot(data = top_5_airlines, aes(x=reorder(DESTINATION_AIRPORT, AverageDelay), y = AverageDelay)) + geom_bar(stat = 'identity', fill='steelblue') + xlab('Airline') + ylab('Average Delay') + ggtitle('Top 5 Average Departure Delay Times by Destination Airport') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#Average Arrival Delay Times by Top 5 Destination Airport
+AIRLINE_arr_delay <- mydata %>% group_by(DESTINATION_AIRPORT) %>%
+           summarise(
+             n = n(),
+             AverageDelay = mean(ARRIVAL_DELAY, na.rm = TRUE)) %>% arrange(desc(n))
+
+top_5_airlines <- head(AIRLINE_arr_delay,5)
+top_5_airlines
+
+
+ggplot(data = top_5_airlines, aes(x= reorder(DESTINATION_AIRPORT, AverageDelay), y = AverageDelay)) + geom_bar(stat = 'identity', fill='steelblue') + xlab('Airline') + ylab('Average Delay') + ggtitle('Top 5 Average Arrival Delay Times by Destination Airport') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+#Additional visualizations + Research airlines and see if their reputation matches what the data says (ex: spirit is not that good so makes sense for more delays)
+```{r}
+
+```
+
+
+
+
+#Relationship between Departure Delay and Arrival Delay
+```{r}
+#Relationship between Departure Delay and Arrival Delay
+cor.test(mydata$DEPARTURE_DELAY, mydata$ARRIVAL_DELAY)
+
+plot(mydata$DEPARTURE_DELAY, mydata$ARRIVAL_DELAY, xlab = 'Departure Delay', ylab = 'Arrival Delay', main = "Association between Departure Delay and Arrival Delay")
+```
+
+###There appears to be a definite positive correlation between the Departure Delay time and Arrival Delay time.
+
+##Find out average prices for the 2 airlines with the top airline delays and see if there's a correlation? Correlation between price and delays?
+
+
+
+
+
